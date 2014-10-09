@@ -67,19 +67,15 @@ end
 @binary_operator(Add,+,"+")
 @binary_operator(Sub,-,"-")
 @binary_operator(Mul,*,"*")
+@binary_operator(Div,/,"/")
 @binary_operator(Pow,^,"^")
 
 
 type Num <: Exp
-    x::Uint64
-end
-
-type LNum <: Exp
     x::Int64
 end
 
 string(x::Num) = "u$(string(x.x))"
-string(x::LNum) = "i$(string(x.x))"
 string_wrap(x::Num) = string(x)
 
 @unary_operator(Neg,-,"-")
@@ -128,7 +124,7 @@ show(io::IO, x::Inference) = print(io, x)
 
 Atom = Union(Sym, Num)
 hash(x::Binary) = hash(hash(x.l) + hash(x.r))
-hash(x::Union(Unary,Num,LNum)) = hash(hash(x.x))
+hash(x::Union(Unary,Num)) = hash(hash(x.x))
 
 # define strict equality
 isequal{T<:Binary}(a::T, b::T) = (a.l == b.l) & (a.r == b.r)
@@ -183,23 +179,23 @@ subs(x::Eval, s::Sym, e::Exp) = Eval(subs(x.x, s, e))
 function eval_expr{T<:Binary}(x::T, ev::Bool = false)
     l = eval_expr(x.l, ev)
     r = eval_expr(x.r, ev)
-    if ev & (typeof(l) == typeof(r) == LNum)
-        return LNum(x.op(l.x,r.x))
+    if ev & (typeof(l) == typeof(r) == Num)
+        return Num(x.op(l.x,r.x))
     end
     return T(l, r)
 end
 
 function eval_expr{T<:Unary}(x::T, ev::Bool = false)
     x = eval_expr(x.x, ev)
-    if ev & (typeof(x) == LNum)
-        return LNum(x.op(x.x))
+    if ev & (typeof(x) == Num)
+        return Num(x.op(x.x))
     end
     return T(x)
 end
 
 eval_expr(x::Eval, ev::Bool = false) = eval_expr(x.x, true)
-eval_expr(x::Sym, ev::Bool = false) = x
-eval_expr(x::Num, ev::Bool = false) = ev ? LNum(x.x) : x
+eval_expr(x::Atom, ev::Bool = false) = x
+
 
 applies(e::Exp, i::Inference) = applies(e, i.this)
 function applies(e::Exp, i::Exp)
