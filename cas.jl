@@ -167,7 +167,7 @@ symbols(a,b) = Dict{Sym,Set{Exp}}()
 symbols{T<:Binary}(a::T, b::T) = merge(symbols(a.l, b.l), symbols(a.r, b.r))
 symbols(e::Exp, i::Inference) = symbols(e, i.this)
 symbols{T<:Union(Neg,Eval)}(a::T, b::T) = symbols(a.x, b.x)
-symbols(a::Exp, b::Sym) = [b => Set([a])]
+symbols(a::Exp, b::Sym) = Dict(b => Set([a]))
 
 subs{T<:Binary}(x::T, s::Sym, e::Exp) = T(subs(x.l, s, e), subs(x.r, s, e))
 subs{T<:Unary}(x::T, s::Sym, e::Exp) = T(subs(x.x, s, e))
