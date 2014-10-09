@@ -218,13 +218,10 @@ function apply(e::Exp, inf::Inference)
     return e
 end
 
-function map{T<:Binary}(x::T, f)
-    l = map(x.l, f)
-    r = map(x.r, f)
-    return f(T(l,r))
-end
-
-function
+map{T<:Binary}(x::T, f) = f(T(map(x.l, f),map(x.r, f)))
+map{T<:Unary}(x::T, f) = f(T(map(x.x, f)))
+map(x::Eval, f) = f(Eval(map(x.x, f)))
+map(x::Atom, f) = f(x)
 
 rules = Inference[]
 push!(rules, Inference(S"x" + -S"y", S"x" - S"y"))
