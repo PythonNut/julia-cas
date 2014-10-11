@@ -70,7 +70,6 @@ end
 @binary_operator(Div,/,"/")
 @binary_operator(Pow,^,"^")
 
-
 type Num <: Exp
     x::Int64
 end
@@ -80,7 +79,6 @@ string_wrap(x::Num) = string(x)
 
 @unary_operator(Neg,-,"-")
 string(x::Neg) = "-($(string(x.x)))"
-
 
 # Symbols (aka. variables)
 type Sym <: Exp
