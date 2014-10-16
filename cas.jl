@@ -72,6 +72,10 @@ end
 
 type Num <: Exp
     x::Int64
+
+    # general metadata field
+    data::Dict{Any,Any}
+    Num(x) = new(x, Dict{Any,Any}())
 end
 
 string(x::Num) = "u$(string(x.x))"
@@ -109,10 +113,14 @@ type Inference
     that::Exp
 end
 
-string(x::Inference) = "$x.this ==> $x.that"
+string(x::Inference) = "$(x.this) ==> $(x.that)"
 
 type Eval <: Exp
     x::Exp
+
+    # general metadata field
+    data::Dict{Any,Any}
+    Eval(x) = new(x, Dict{Any,Any}())
 end
 
 string(x::Eval) = "eval($(string(x.x)))"
