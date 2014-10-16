@@ -229,6 +229,15 @@ map{T<:Unary}(x::T, f) = f(T(map(x.x, f)))
 map(x::Eval, f) = f(Eval(map(x.x, f)))
 map(x::Atom, f) = f(x)
 
+function applicable_lambda(x::Exp, i::Inference)
+    x.data["applies"] = applies(x, i)
+    return x
+end
+
+function applicable(x::Exp, i::Inference)
+    return map(x, e -> applicable_lambda(e, i))
+end
+
 rules = Inference[]
 push!(rules, Inference(S"x" + -S"y", S"x" - S"y"))
 push!(rules, Inference(S"a" * S"x" + S"b" * S"x", Eval(S"a" + S"b") * S"x"))
